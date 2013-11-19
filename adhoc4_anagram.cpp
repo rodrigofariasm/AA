@@ -7,31 +7,16 @@
 #include <cctype>
 #include <utility>
 #include <algorithm> 
-#include <math.h>
+#include <vector>
+
 using namespace std;
 
 int main(){
 	int n;
 	scanf("%d", &n);
-	double aux, max = 0.0, sum = 0.0;
+	int vetor[n];	
 	for(int i = 0; i < n; i++){
-		cin >> aux;
-		sum += aux;
-		if(aux > max){
-			max = aux;
-		}
+		cin >> vetor[i];
 	}
-
-	long long x = ceil(sum/(n-1));
-
-	while (x*(n - 1) < sum){
-		x++;
-	}
-	
-	if (x < max){
-		x = max;
-	}
-	
-	cout << x << endl;
 	
 }
