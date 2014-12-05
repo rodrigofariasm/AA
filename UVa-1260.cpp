@@ -14,48 +14,39 @@ using namespace std;
 #define PR0(a,n) { cout << #a << " = "; REP(_,n) cout << a[_] << ' '; cout << endl; }
 
 int n, m;
-vector<int> numb;//numbers 
-
-void solve(int q){
-	int CS = 1e18; //closestSum
-	int minDif = 1e18; //closestSum
-	int sum;
-	int dif;
-	REP(i, n-1){
-		FOR(j, i+1, n-1){
-			sum = numb[i] + numb[j];
-			dif = abs(q-sum);
-			
-			if(dif < minDif){
-				minDif = dif;
-				CS = sum;
-			} 
-			if(sum > q) break;
-		}
+int a[1024];//numbers 
+int b[1024];
+void solve(){
+	int sum = 0, aux;
+	if(a[1] > a[0]){
+		sum++;
+		
 	}
-	printf("Closest sum to %d is %d.\n", q, CS);
+	FOR(i, 2, n-1){
+		aux= 0;
+		FORD(j, i-1, 0){
+			if(a[i] >= a[j]){
+				sum++;
+			}
+		}
+		
+	}
+	printf("%d\n", sum);
 	
 }
 
 int main(){
-	int TC = 0;
-	scanf("%d", &n);
-	int query, aux;
-	while(n!=0){
-		TC++;
-		printf("Case %d:\n", TC);
+	int TC;
+	scanf("%d", &TC);
+	int aux;
+	
+	while(TC--){
+		scanf("%d", &n);
 		REP(i, n){
 			scanf("%d", &aux);
-			numb.push_back(aux);
+			a[i] = aux;
 		}
-		sort(numb.begin(), numb.begin()+n);
-		scanf("%d", &m);
-		REP(i, m){
-			scanf("%d", &query);
-			solve(query);
-		}
-		numb.erase(numb.begin(), numb.begin()+n);
-		scanf("%d", &n);
+		solve();
 		
 	}
 	return 0;
