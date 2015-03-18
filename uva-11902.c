@@ -1,4 +1,3 @@
-// Rodrigo Farias de Macêdo
 #include <bits/stdc++.h>
 using namespace std;
 #define ll long long
@@ -11,10 +10,9 @@ using namespace std;
 #define PR(a,n) { cout << #a << " = "; FOR(_,1,n) cout << a[_] << ' '; cout << endl; }
 #define PR0(a,n) { cout << #a << " = "; REP(_,n) cout << a[_] << ' '; cout << endl; }
 
-map<int, int> visited;
-map<int, vector<int> > G;
+int g[101][101], n, t;
 
-void visita(int s){
+void DFS(int s){
 	int aux;
 	queue<int> Q;
 	Q.push(s);
@@ -32,28 +30,14 @@ void visita(int s){
 }
 
 int main() {
-	int n, a, b, s, t, cases = 1;
+	cin>> t;
+	while(t--){
+        memset(g, 0, sizeof(g[0][0]) * n * n);
+        cin >> n;
+        REP(i,n) REP(j, n) cin >> g[i][j];
 
-	while(scanf("%d", &n) && n){
-		G.clear();
-		visited.clear();
-		REP(i, n){
-			cin >> a >> b;
-			G[a].push_back(b);
-			G[b].push_back(a);
-		}
-		while(scanf("%d %d", &s, &t) && s!=0 && t!=0){
-			visited.clear();
-			visita(s);
-			int result = 0;
-			EACH(it, visited){
-                if((*it).second>t)++result;
-			}
-			result += G.size() - visited.size();
-			printf("Case %d: %d nodes not reachable from node %d with TTL = %d.\n",cases,result,s,t);
-			cases++;
-		}
 
 	}
+
 	return 0;
 }
