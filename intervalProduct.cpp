@@ -1,4 +1,4 @@
- // Rodrigo Farias de Macêdo
+ // Rodrigo Farias de Macï¿½do
 
 #include <string>
 #include <iostream>
@@ -16,31 +16,47 @@
 #include <queue>
 
 using namespace std;
+#define ll long long
+#define FOR(i,a,b) for(int i=(a),_b=(b); i<=_b; i++)
+#define FORD(i,a,b) for(int i=(a),_b=(b); i>=_b; i--)
+#define REP(i,a) for(int i=0,_a=(a); i<_a; i++)
+#define EACH(it,a) for(__typeof(a.begin()) it = a.begin(); it != a.end(); ++it)
+#define DEBUG(x) { cout << #x << " = " << x << endl; }
+#define PR(a,n) { cout << #a << " = "; FOR(_,1,n) cout << a[_] << ' '; cout << endl; }
+#define PR0(a,n) { cout << #a << " = "; REP(_,n) cout << a[_] << ' '; cout << endl; }
 
 typedef pair<int, int> ii;
 typedef vector<ii> vii;
 typedef vector<int> vi;
 
-int tree[1000000];
+vector<int> tree, arr;
 
-void build(int node, int b, int e)
-  {
-      if (b >= e){
-      }else{
-		if(tree[2*node] == -101)   build(2 * node, b, (b + e) / 2);
-        if(tree[2*node+1] == -101) build(2 * node + 1, (b + e) / 2 + 1, e);
+void build(int node, int b, int e){
+    if (b == e){
+      tree[node] = arr[b-1];
 
-          tree[node] = tree[node*2] * tree[node*2+1];
-      }
+    }else{
+      build(2 * node, b, (b + e) / 2);
+      build(2 * node + 1, (b + e) / 2 + 1, e);
+      tree[node] = tree[node*2] * tree[node*2+1];
+    }
+
   }
-  
-void update(int node, int value){
-	tree[node] = value;
-	while(node !=1){
-		node = node/2;
-		tree[node] = tree[node*2] * tree[node*2+1];
-	}
+
+void update(int node, int idx, int value, int l, int r){
+  if(idx < l || idx > r) return;
+	if(l == r){
+    if(value > 0) tree[node] = 1;
+    else if(value < 0) tree[node] = -1;
+    else tree[node] = 0;
+    return;
+  }
+
+	update(node << 1, idx, value, l, (l+r)/2);
+	update((node << 1)+1, idx, value, (l+r)/2+1, r);
+	tree[node] = tree[node<<1] * tree[(node<<1)+1];
 }
+
 int query(int node, int L, int R, int i, int j){
 	if(i > R || j < L) return 2;
 	if(L >= i && R <= j) return tree[node];
@@ -49,48 +65,41 @@ int query(int node, int L, int R, int i, int j){
 	if (p1 == 2) return p2;
 	if (p2 == 2) return p1;
 	return p1*p2;
-	
+
 }
-  
-  
 
 int main(){
-	std::ios_base::sync_with_stdio(false);
+	ios_base::sync_with_stdio(false);
 	int N, k;
-	while(scanf("%d %d", &N, &k)){
-			for(int i=0;i<2*N; i++){
-				tree[i] = -101;
-			}
+	while(cin >> N){
+      cin >> k;
+      tree.assign(N*4, 2);
+      arr.assign(N, 0);
 			for(int i = 0; i<N; i++){
 				int entry;
 				cin >>entry ;
 				if(entry > 0) entry = 1;
-				else if(entry < 0) entry = -1;	
-				tree[2*N - N + i] = entry;
+				else if(entry < 0) entry = -1;
+				arr[i] = entry;
 			}
-			build(1, 1, 2*N-1);
-			string res = "";
+			build(1, 1, N);
 			char st; int x,y;
 			for(int i = 0; i < k; i++){
-				cout << i << k << endl;
-				scanf("%c %d %d", &st, &x, &y);
-				
+				cin >> st >> x >> y;
 				if(st == 'P'){
 					int a = query(1, 1, N, x, y);
-					cout << "a "<< a << endl;
-					if(a > 0) res+= "+";
-					else if(a<0) res+="-";
-					else res+="0";
+          if(a > 0) cout <<  "+";
+					else if(a<0) cout << "-";
+					else cout << "0";
 				}
 				if(st == 'C'){
-					update(x , y);
-				}
+					update(1, x , y, 1 , N);
 
-			
+				}
 			}
-				cout << res << endl;
-		
-			
-	}	
+    		cout << endl;
+
+
+	}
 	return 0;
 }

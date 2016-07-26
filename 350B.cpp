@@ -18,7 +18,7 @@ using namespace std;
 #define PR(a,n) { cout << #a << " = "; FOR(_,1,n) cout << a[_] << ' '; cout << endl; }
 #define PR0(a,n) { cout << #a << " = "; REP(_,n) cout << a[_] << ' '; cout << endl; }
 
-#define N 100001
+#define N 100005
 int obj[N];
 int paths[N], n, pathc[N];
 inline bool read()
@@ -62,8 +62,6 @@ int main(){
   		if (i) cout << " ";
   		cout <<  res[i] + 1;
   }
-	puts("");
-
   }
   return 0;
 }
