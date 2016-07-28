@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <math.h>
 #include <queue>
+#include <map>
 
 using namespace std;
-#define ll long long
 #define FOR(i,a,b) for(int i=(a),_b=(b); i<=_b; i++)
 #define FORD(i,a,b) for(int i=(a),_b=(b); i>=_b; i--)
 #define REP(i,a) for(int i=0,_a=(a); i<_a; i++)
@@ -21,52 +21,103 @@ using namespace std;
 #define PR0(a,n) { cout << #a << " = "; REP(_,n) cout << a[_] << ' '; cout << endl; }
 #define NINF -100001
 #define vi vector<int>
-vector< vector< pair< int, ll> > > G;
-vi L, O; //level, ocorrence
-vector<pair <int, ll> > P;
-void dfs(int node, int lvl){
-	if(O[node] == -1)	O[node] = (P.size());
-	P.push_back(node);
-	L.push_back(lvl);
-	REP(i, G[node].size()){
-		dfs(G[node][i].first, lvl+1);
-		P.push_back(node);
-		L.push_back(lvl);
-	}
-	return;
-}
+#define MAXN 100005
+#define LOGMAXN 14
 
-ll rmq(int n1, int n2){
-	sum = 0;
-	for(int i = n1; i <= n2; i++){
-		sum +=
+int P[MAXN][LOGMAXN], L[MAXN];
+pair<int, long long> T[MAXN];
+map< pair< int, int >, long long> pesos;
+
+void LCA(int N){
+  int i, j;
+  //we initialize every element in P with -1
+  for (i = 0; i < N; i++){
+  	for (j = 0; 1 << j < N; j++)   P[i][j] = -1;
 	}
-	return P[m];
+  //the first ancestor of every node i is T[i]
+  for (i = 0; i < N; i++)  P[i][0] = T[i].first;
+
+  //bottom up dynamic programing
+  for (j = 1; 1 << j < N; j++){
+   for (i = 0; i < N; i++)
+	 		if (P[i][j - 1] != -1)
+			 	P[i][j] = P[P[i][j - 1]][j - 1];
+	}
+
+}
+int query(int N, int p, int q){
+	int tmp, lg, i;
+
+//if p is situated on a higher level than q then we swap them
+	if (L[p] < L[q])
+			tmp = p, p = q, q = tmp;
+
+//we compute the value of [log(L[p)]
+	for (lg = 1; 1 << lg <= L[p]; lg++);
+	lg--;
+
+//we find the ancestor of node p situated on the same level
+//with q using the values in P
+	for (i = lg; i >= 0; i--)
+			if (L[p] - (1 << i) >= L[q])
+					p = P[p][i];
+
+	if (p == q)
+			return p;
+
+//we compute LCA(p, q) using the values in P
+	for (i = lg; i >= 0; i--)
+			if (P[p][i] != -1 && P[p][i] != P[q][i])
+					p = P[p][i], q = P[q][i];
+	return T[p].first;
 }
 
 int main(){
-	int N, Q, a;
-	ll b;
+	int N, Q, a, c, aux;
+	long long b;
 	scanf("%d", &N);
 	while(N>0){
-		printf("Case %d:\n", tc+1);
-		scanf("%d", &N);
-		vector<pair <int, ll> >  example;
-		G.assign(N+1, example );
-		O.assign(N+1, -1);
-		REP(n, N){
-			cin >> a >> b;
-			if(n < a)		G[n].push_back(make_pair(a, b));
-			else G[a].push_back(make_pair(n, b));
+		L[0] =0;
+		FOR(n,1, N-1){
+			scanf("%d %lld", &a, &b);
+			if(n < a){
+				T[a] = make_pair(n, b);
+				L[a]
 			}
+			else T[n] = make_pair(a, b);
+
+	//		pesos.insert(make_pair(make_pair(a,n), b));
+	//		pesos.insert(make_pair(make_pair(a,n), b));
 		}
-		dfs(0, 0);
+		LCA(N);
+		REP(i, N){
+			REP(j, 3){
+				printf("%d ", P[i][j]);
+			}
+			printf("\n");
+		}
 
 		scanf("%d", &Q);
 		REP(q, Q){
-			cin >> a >> b;
-			cout << ((O[a] < O[b]) ? rmq(O[a], O[b]) : rmq(O[b], O[a])) << endl;;
+			scanf("%d %d", &a, &c);
+			aux = query(N, a, c);
+			DEBUG(aux);
+			b = 0;
+			while(a != aux){
+				//DEBUG(T[a].second);
+				b+= T[a].second;
+				a = T[a].first;
+			}
+			a = c;
+			while(a != aux){
+			//	DEBUG(a);
+			//	DEBUG(aux);
+				b+= T[a].second;
+				a = T[a].first;
+			}
+			printf("%lld ", b);
 		}
+		printf("\n");
 		scanf("%d", &N);
 	}
 

@@ -24,7 +24,7 @@ using namespace std;
 #define MAXN 1005
 #define LOGMAXN 10
 int P[MAXN][LOGMAXN], T[MAXN], L[MAXN];
-void process3(int N){
+void LCA(int N){
   int i, j;
   //we initialize every element in P with -1
   for (i = 0; i < N; i++)
@@ -72,7 +72,6 @@ int main(){
 	int TC, N, Q, a, b;
 	scanf("%d", &TC);
 	REP(tc, TC){
-		printf("Case %d:\n", tc+1);
 		scanf("%d", &N);
 		L[0] = 0;
 		REP(n, N){
@@ -83,11 +82,11 @@ int main(){
 				L[b-1] = L[n]+1;
 			}
 		}
-		process3(N);
+		LCA(N);
 		scanf("%d", &Q);
 		REP(q, Q){
 			scanf("%d %d", &a, &b);
-			printf("%d\n", query(N, a-1, b-1) + 1);
+			printf("%d ", query(N, a-1, b-1) + 1);
 		}
 
 	}
