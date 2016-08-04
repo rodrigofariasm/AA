@@ -28,20 +28,19 @@ using namespace std;
 int P[MAXN][LOGMAXN], L[MAXN], T[MAXN];
 long long W[MAXN];
 bool vis[MAXN];
-vector<int> E[MAXN], V[MAXN];
+vector<int> E[MAXN], H;
 void dfs(int n, int p, int l){
 	vis[n] = true;
   T[n] = p; L[n] = l;
   for(int i = 0; i < E[n].size(); i++){
 		if(!vis[E[n][i]]){
 			P[E[n][i]][0] =  n;
-			W[E[n][i]] = W[n] + V[n][i];
 			dfs(E[n][i], n, l+1);
 		}
   }
 }
 
-void LCA(int N){
+void preprocess(int N){
   int i, j;
   //we initialize every element in P with -1
   for (i = 0; i < N; i++){
@@ -86,41 +85,83 @@ int query(int N, int p, int q){
 	return T[p];
 }
 
+vector<int> merge(vector<int> v1, vector<int> v2, int d){
+	sort(v1.begin(), v1.begin()+ v1.size());
+	sort(v2.begin(), v2.begin()+ v2.size());
+	vector<int> res;
+	int i =0;int  j=0;
+	for(; (i<v1.size() || j < v2.size())&& d > 0; d--){
+		DEBUG(i);
+		if(i == v1.size()){
+			res.push_back(v2[j]); j++;
+		}else if(j == v2.size()){
+			res.push_back(v1[i]); i++;
+		}else if(v1[i] == res[res.size()-1]){
+			i++;
+			d++;
+		}else if(v2[j] == res[res.size()-1]){
+			j++;
+			d++;
+		}else if(v1[i] <= v2[j]){
+			res.push_back(v1[i]); i++;
+		}else{
+			res.push_back(v2[j]); j++;
+		}
+		DEBUG(i);
+	}
+
+	return res;
+}
+
 int main(){
-	int N, Q, a, b,c, aux;
-	scanf("%d", &N);
-	while(N>0){
-		L[0] =0;
-    W[0] = 0;
-		REP(i, N){
-			 E[i].clear();
-			 V[i].clear();
-		 }
-		memset(vis, false, N);
-		FOR(n,1, N-1){
-			scanf("%d %d", &a, &b);
-			E[n].push_back(a);
-			E[a].push_back(n);
-			V[n].push_back(b);
-			V[a].push_back(b);
+	int N, M, Q, a, b,c, aux;
+	scanf("%d %d %d", &N, &M, &Q);
+	L[0] =0;
+	memset(vis, false, N);
+	REP(zzz, N-1){
+		scanf("%d %d", &a, &b);
+		a--; b--;
+		E[b].push_back(a);
+		E[a].push_back(b);
+	}
+
+	REP(i, M){
+		scanf("%d", &a);
+		H.push_back(a);
+	}
+//	PR0(H,M);
+	preprocess(N);
+/*	REP(i, N){
+	REP(j,3){
+		printf("%d ",P[i][j]);
+	}
+		printf("\n");
+	}*/
+	REP(q, Q){
+		scanf("%d %d %d", &a, &b,&c);
+		a--; b--;
+		aux = query(N, a, b);
+		vector<int> ret, retau;
+		while(a != aux){
+			//DEBUG(a);
+			if(H[a]> 0 && H[a] < 100005)	ret.push_back(H[a]);
+			a = T[a];
 		}
-		LCA(N);
-/*    PR0(T, N);
-		REP(i, N){
-			REP(j, 3){
-				printf("%d ", P[i][j]);
-			}
-			printf("\n");
+		if(H[aux]> 0 && H[aux] < 100004) ret.push_back(H[aux]);
+		while(b != aux){
+			if(H[b] > 0 && H[b] < 100005) retau.push_back(H[b]);
+			b = T[b];
 		}
-*/
-		scanf("%d", &Q);
-		REP(q, Q){
-			scanf("%d %d", &a, &c);
-			aux = query(N, a, c);
-			printf("%lld", W[a] + W[c] - 2*W[aux]);
-			if(q+1 !=Q) printf(" " );
+		PR0(ret, ret.size());
+		PR0(retau, retau.size());
+		ret = merge(ret, retau, c);
+	//	PR0(ret, ret.size());
+		c = min((int)ret.size(), c) ;
+		printf("%d", c);
+		for(int i = 0; i< ret.size() && c>0; i++){
+			printf(" %d", ret[i]);
+			c--;
 		}
 		printf("\n");
-		scanf("%d", &N);
 	}
 }
